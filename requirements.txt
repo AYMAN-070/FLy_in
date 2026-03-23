@@ -1,0 +1,6 @@
+flake8
+mypy
+# --- Utils to create the package .whl ---
+setuptools
+wheel
+build

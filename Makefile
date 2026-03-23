@@ -1,5 +1,5 @@
 PYTHON = python3
-MAIN_FILE = fly_in
+MAIN_FILE = fly_in.py
 CONFIG_FILE = config.txt
 
 MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
