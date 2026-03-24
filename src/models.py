@@ -53,6 +53,7 @@ class Connection:
         self.zone1_name = zone1_name
         self.zone2_name = zone2_name
         self.max_link_capacity = max_link_capacity
+        self.used_capacity_turn = 0
         self.drones_count = 0
 
     @staticmethod

@@ -1,15 +1,14 @@
 PYTHON = python3
 MAIN_FILE = fly_in.py
-CONFIG_FILE = config.txt
 
 MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 all: run
 install:
 		pip install -r requirements.txt
 run:
-		$(PYTHON) $(MAIN_FILE) $(CONFIG_FILE)
+		$(PYTHON) $(MAIN_FILE)
 debug:
-		$(PYTHON) -m pdb $(MAIN_FILE) $(CONFIG_FILE)
+		$(PYTHON) -m pdb $(MAIN_FILE)
 clean:
 		rm -rf __pycache__
 		rm -rf .mypy_cache
