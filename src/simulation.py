@@ -69,7 +69,7 @@ class Simulation:
 
     def get_connection(self, zone1_name: str,
                        zone2_name: str) -> Optional[Connection]:
-        """Trouve la route qui relie deux zones, peu importe le sens."""
+        """Find the path that connects two zones,"""
         for conn in self.connections:
             if (conn.zone1_name == zone1_name and
                 conn.zone2_name == zone2_name) or \
@@ -80,7 +80,7 @@ class Simulation:
 
     def run_simulation(self) -> None:
         start_name = list(self.zones.values())[0].name
-        end_name = list(self.zones.values())[-1].name
+        end_name = list(self.zones.values())[1].name
         shortest_path = self.find_shortest_path(start_name, end_name)
         if not shortest_path:
             print("Error: Can't find the shortest path")
@@ -97,8 +97,15 @@ class Simulation:
             for conn in self.connections:
                 conn.used_capacity_turn = 0
             movement_tour = []
+            """if Drone in zone 'priority' we place it at the first of list """
+            drones.sort(key=lambda d: 0 if
+                        self.zones[d.current_zone].zone_type ==
+                        "priority" else 1)
             for drone in drones:
                 if drone.is_finished:
+                    continue
+                if drone.wait_time > 0:
+                    drone.wait_time -= 1
                     continue
                 index_now = drone.path.index(drone.current_zone)
                 next_zone_name = drone.path[index_now + 1]
@@ -108,9 +115,10 @@ class Simulation:
                 if not road:
                     continue
                 """Is there enough space in the arrival zone"""
-                place_dispo = (next_zone.drones_count <
-                               next_zone.max_drones) or (next_zone.name
-                                                         == end_name)
+                place_dispo = (
+                    next_zone.drones_count < next_zone.max_drones
+                    or next_zone.name == end_name
+                    )
                 """Is road has the capacity for this tour"""
                 free_road = road.used_capacity_turn < road.max_link_capacity
                 if place_dispo and free_road:
@@ -120,8 +128,15 @@ class Simulation:
                     drone.current_zone = next_zone_name
                     if drone.current_zone == end_name:
                         drone.is_finished = True
+                    else:
+                        if next_zone.zone_type == "restricted":
+                            drone.wait_time = 1
                     movement_tour.append(f"D{drone.id}-{drone.current_zone}")
             if movement_tour:
+                """We sort the final text by Drone number,
+                because we change the order before to check priority zone"""
+                movement_tour.sort(key=lambda x:
+                                   int(x.split('-')[0].replace('D', '')))
                 print(" ".join(movement_tour))
             if not movement_tour and any(not drone.is_finished for
                                          drone in drones):

@@ -92,3 +92,4 @@ class Drone:
         self.current_zone = start_zone
         self.path: list[str] = []
         self.is_finished = False
+        self.wait_time = 0
