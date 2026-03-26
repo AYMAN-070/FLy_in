@@ -7,13 +7,20 @@ from src.simulation import Simulation
 
 
 def choose_file() -> str:
+    """creat a window Tkinter"""
     root = tk.Tk()
+    """Hide the window"""
     root.withdraw()
+    """os.path.abspath..: gives the full path to the current Python file
+    os.path.dirname(...): take the folder containing this file"""
     dossier_projet = os.path.dirname(os.path.abspath(__file__))
+    """add 'maps' to the path"""
     dossier_maps = os.path.join(dossier_projet, "maps")
     file_path = filedialog.askopenfilename(
         title="Select Fly_in card",
+        # Open the selector in maps folder
         initialdir=dossier_maps,
+        # Show only .txt files
         filetypes=[("Text file", "*.txt"), ("All text files", "*.*")]
     )
     if not file_path:

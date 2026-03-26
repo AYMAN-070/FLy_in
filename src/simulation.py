@@ -78,7 +78,7 @@ class Simulation:
                 return conn
         return None
 
-    def run_simulation(self) -> None:
+    def run_simulation(self):
         start_name = list(self.zones.values())[0].name
         end_name = list(self.zones.values())[1].name
         shortest_path = self.find_shortest_path(start_name, end_name)
@@ -137,6 +137,11 @@ class Simulation:
                 because we change the order before to check priority zone"""
                 movement_tour.sort(key=lambda x:
                                    int(x.split('-')[0].replace('D', '')))
+                yield {
+                    "turn": turn,
+                    "movements": movement_tour,
+                    "drones_states": {d.id: d.current_zone for d in drones}
+                }
                 print(" ".join(movement_tour))
             if not movement_tour and any(not drone.is_finished for
                                          drone in drones):
