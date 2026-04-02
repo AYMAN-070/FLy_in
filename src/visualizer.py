@@ -54,13 +54,18 @@ class Visualizer(QMainWindow):
             self.scene.addItem(line)
         for zone in self.sim.zones.values():
             x, y = self.get_screen_coords(zone.x, zone.y)
-            color = QColor("skyblue")
-            if zone.zone_type == "restricted":
-                color = QColor("red")
-            elif zone.zone_type == "priority":
-                color = QColor("orange")
+            final_color = QColor(zone.color) if zone.color else QColor()
+            if not final_color.isValid():
+                if zone.zone_type == "restricted":
+                    final_color = QColor("red")
+                elif zone.zone_type == "priority":
+                    final_color = QColor("orange")
+                elif zone.zone_type == "blocked":
+                    final_color = QColor("black")
+                else:
+                    final_color = QColor("skyblue")
             ellipse = QGraphicsEllipseItem(x - 15, y - 15, 30, 30)
-            ellipse.setBrush(QBrush(color))
+            ellipse.setBrush(QBrush(final_color))
             ellipse.setPen(QPen(QColor("black")))
             self.scene.addItem(ellipse)
             text = QGraphicsTextItem(zone.name)
@@ -77,7 +82,7 @@ class Visualizer(QMainWindow):
 
         for i in range(1, self.sim.nb_drones + 1):
             drone_rect = QGraphicsRectItem(0, 0, 12, 12)
-            drone_rect.setBrush(QBrush(QColor("blue")))
+            drone_rect.setBrush(QBrush(QColor("pink")))
             drone_rect.setPos(start_x - 6, start_y - 6)
             self.drone_items[i] = drone_rect
             self.scene.addItem(drone_rect)
@@ -127,8 +132,6 @@ class Visualizer(QMainWindow):
                 except StopIteration:
                     self.is_finished = True
                     print("All the drones have arrived !")
-                    self.turn_counter_item.setPlainText(f"FIN - Tour : {self.current_index}")
-                    self.turn_counter_item.setDefaultTextColor(QColor("green"))
 
     def rewind_simulation(self) -> None:
         if self.current_index > 0:
