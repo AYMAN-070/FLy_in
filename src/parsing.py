@@ -5,9 +5,9 @@ class ConfigParser:
     @staticmethod
     def parsing(file: str) -> dict:
         config: dict = {
-            "nb_drones": "",
-            "start_hub": "",
-            "end_hub": "",
+            "nb_drones": None,
+            "start_hub": None,
+            "end_hub": None,
             "hubs": [],
             "connections": []
         }
@@ -21,13 +21,26 @@ class ConfigParser:
                         key, value = line.split(':', 1)
                         key = key.strip()
                         value = value.strip()
-                        if key in ["hub", "connection"]:
+                        if config["nb_drones"] is None:
+                            if key != "nb_drones":
+                                print("Error: First line must be nb_drones")
+                                sys.exit(1)
+                            config[key] = value
+                        elif key in ["start_hub", "end_hub"]:
+                            if config[key] is not None:
+                                print(f"Error: duplicate {key}")
+                                sys.exit(1)
+                            config[key] = value
+                        elif key in ["hub", "connection"]:
                             config[key + "s"].append(value)
                         else:
                             config[key] = value
                     else:
                         print("Error : Invalid format", line)
                         sys.exit(1)
+            if not config["start_hub"] or not config["end_hub"]:
+                print("Error: missing start_hub or end_hub")
+                sys.exit(1)
         except FileNotFoundError:
             print("Error: file not found")
             sys.exit(1)

@@ -3,6 +3,7 @@ from .models import Zone, Connection, Drone
 
 
 class Simulation:
+
     def __init__(self, config: dict[str, Any]) -> None:
         self.nb_drones = int(config["nb_drones"])
         self.zones: Dict[str, Zone] = {}
@@ -34,6 +35,13 @@ class Simulation:
         if data["zone1"] not in self.zones or data["zone2"] not in self.zones:
             raise ValueError(f"Error: The {line} connection links to an "
                              f"unknown area!")
+        z1 = data["zone1"]
+        z2 = data["zone2"]
+        for conn in self.connections:
+            if (conn.zone1_name == z1 and conn.zone2_name == z2) or \
+               (conn.zone1_name == z2 and conn.zone2_name == z1):
+                raise ValueError(f"Error: Connection between {z1} and {z2} "
+                                 f"already exists!")
         nouvelle_connexion = Connection(
             zone1_name=data["zone1"],
             zone2_name=data["zone2"],

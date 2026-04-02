@@ -2,6 +2,7 @@ from typing import Optional, Any
 
 
 class Zone:
+
     def __init__(self, name: str, x: int, y: int, zone_type: str = "normal",
                  max_drones: int = 1, color: Optional[str] = None) -> None:
         self.name = name
@@ -28,7 +29,6 @@ class Zone:
             y = int(data_list[2])
         except ValueError:
             raise ValueError("Coordinqtes x and y should be integers")
-
         metadata = {
             "zone": "normal",
             "max_drones": 1,
@@ -41,13 +41,26 @@ class Zone:
                     raise ValueError(f"Malformed metadata : {item}")
                 key, val = item.split('=')
                 if key == "max_drones":
-                    metadata[key] = int(val)
+                    try:
+                        m_val = int(val)
+                        if m_val <= 0:
+                            raise ValueError()
+                        metadata[key] = m_val
+                    except ValueError:
+                        raise ValueError(f"max_drones for zone '{name}' must "
+                                         f" be a positive integer")
+                elif key == "zone":
+                    if val not in ["normal", "blocked", "restricted",
+                                   "priority"]:
+                        raise ValueError(f"Invalid zone type '{val}'")
+                    metadata[key] = val
                 else:
                     metadata[key] = val
         return {"name": name, "x": x, "y": y, "metadata": metadata}
 
 
 class Connection:
+
     def __init__(self, zone1_name: str, zone2_name: str,
                  max_link_capacity: int = 1) -> None:
         self.zone1_name = zone1_name
@@ -62,8 +75,7 @@ class Connection:
         main_data = parts[0].strip()
         zones = main_data.split('-')
         if len(zones) != 2:
-            raise ValueError(f"Invalid connection format. Expected: "
-                             f"'zone1-zone2'. Received: '{main_data}'")
+            raise ValueError("Invalid format. Expected: zone1-zone2 ")
         zone1_name = zones[0].strip()
         zone2_name = zones[1].strip()
         metadata = {
@@ -76,9 +88,15 @@ class Connection:
                     raise ValueError(f"Malformed metadata : {item}")
                 key, val = item.split('=')
                 if key == "max_link_capacity":
-                    metadata[key] = int(val)
+                    try:
+                        c_val = int(val)
+                        if c_val <= 0:
+                            raise ValueError()
+                        metadata[key] = c_val
+                    except ValueError:
+                        raise ValueError("max_link_capacity must be positive")
                 else:
-                    metadata[key] = int(val)
+                    metadata[key] = val
         return {
             "zone1": zone1_name,
             "zone2": zone2_name,
