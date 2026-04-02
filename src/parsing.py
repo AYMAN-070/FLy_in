@@ -25,7 +25,13 @@ class ConfigParser:
                             if key != "nb_drones":
                                 print("Error: First line must be nb_drones")
                                 sys.exit(1)
-                            config[key] = value
+                            try:
+                                config[key] = int(value)
+                                if int(value) <= 0:
+                                    raise ValueError ("Number of drones should be >= 0")
+                            except ValueError as e:
+                                print("Error : ", e)
+                                sys.exit(1)
                         elif key in ["start_hub", "end_hub"]:
                             if config[key] is not None:
                                 print(f"Error: duplicate {key}")
