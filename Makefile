@@ -1,6 +1,6 @@
 PYTHON = python3
 MAIN_FILE = fly_in.py
-MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs --explicit-package-bases
 all: run
 install:
 		@echo "Installing python dependencies..."
@@ -15,15 +15,15 @@ clean:
 		find . -type f -name "*.pyc" -delete
 lint:
 		@echo "--- Running Flake8---"
-		python3 -m flake8 .
+		python3 -m flake8 fly_in.py src/
 		@echo "--- Running Mypy---"
-		python3 -m mypy $(MYPY_FLAGS) .
+		python3 -m mypy $(MYPY_FLAGS) fly_in.py src/parsing.py src/simulation.py src/visualizer.py src/models.py
 
 lint-strict:
 		@echo "--- Running Flake8 . ---"
 		python3 -m flake8 .
 		@echo "--- Running Mypy --strict ---"
-		python3 -m mypy --strict $(MYPY_FLAGS) .
+		python3 -m mypy --strict $(MYPY_FLAGS) fly_in.py src/parsing.py src/simulation.py src/visualizer.py src/models.py
 
 re: clean all
 

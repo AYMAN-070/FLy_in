@@ -1,10 +1,11 @@
 import sys
+from typing import Dict, Any
 
 
 class ConfigParser:
     @staticmethod
-    def parsing(file: str) -> dict:
-        config: dict = {
+    def parsing(file: str) -> Dict[str, Any]:
+        config: Dict[str, Any] = {
             "nb_drones": None,
             "start_hub": None,
             "end_hub": None,
@@ -28,7 +29,8 @@ class ConfigParser:
                             try:
                                 config[key] = int(value)
                                 if int(value) <= 0:
-                                    raise ValueError ("Number of drones should be >= 0")
+                                    raise ValueError("nb_drones "
+                                                     "should be >= 0")
                             except ValueError as e:
                                 print("Error : ", e)
                                 sys.exit(1)

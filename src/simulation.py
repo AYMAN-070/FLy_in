@@ -61,7 +61,8 @@ class Simulation:
                 visited.add(current_zone)
                 voisins = self.get_voisins(current_zone)
                 """We make priority zones at the top of the list"""
-                voisins.sort(key=lambda v: 0 if self.zones[v].zone_type == "priority" else 1)
+                voisins.sort(key=lambda v: 0
+                             if self.zones[v].zone_type == "priority" else 1)
                 for voisin in voisins:
                     nouveau_chemin = list(path)
                     nouveau_chemin.append(voisin)

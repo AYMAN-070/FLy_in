@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 
 
 class Zone:
@@ -14,7 +14,7 @@ class Zone:
         self.drones_count = 0
 
     @staticmethod
-    def validate_zone(line_value: str) -> dict:
+    def validate_zone(line_value: str) -> Dict[str, Any]:
         parts = line_value.split('[')
         main_data = parts[0].strip()
         data_list = main_data.split()
@@ -96,7 +96,7 @@ class Connection:
                     except ValueError:
                         raise ValueError("max_link_capacity must be positive")
                 else:
-                    metadata[key] = val
+                    metadata[key] = int(val)
         return {
             "zone1": zone1_name,
             "zone2": zone2_name,

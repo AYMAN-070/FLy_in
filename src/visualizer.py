@@ -3,16 +3,17 @@ from PyQt6.QtWidgets import QGraphicsEllipseItem, QGraphicsLineItem
 from PyQt6.QtWidgets import QGraphicsRectItem, QGraphicsTextItem
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QPen, QBrush
+from typing import Any, Dict
 
 
 class Visualizer(QMainWindow):
-    def __init__(self, simulation_engine) -> None:
+    def __init__(self, simulation_engine: Any) -> None:
         super().__init__()
         self.sim = simulation_engine
         self.setWindowTitle("Fly_In Simulation - Mode")
         self.resize(1000, 800)
         """History so I can do replay using 'Q' """
-        self.history = []
+        self.history: list[dict[str, Any]] = []
         self.current_index = 0
         self.simulation_generator = self.sim.run_simulation()
         self.is_finished = False
@@ -30,14 +31,13 @@ class Visualizer(QMainWindow):
         self.turn_counter_item.setPos(20, 20)
         self.scene.addItem(self.turn_counter_item)
         """Dict to stock graphic objects"""
-        self.zone_items = {}
-        self.drone_items = {}
+        self.zone_items: dict[str, Any] = {}
+        self.drone_items: dict[int, Any] = {}
         self.draw_map()
         self.advance_simulation()
         self.update_display(self.history[0])
-        
 
-    def get_screen_coords(self, x: float, y: float) -> tuple:
+    def get_screen_coords(self, x: float, y: float) -> tuple[float, float]:
         return (x * 150) + 100, (y * 150) + 100
 
     def draw_map(self) -> None:
@@ -87,14 +87,15 @@ class Visualizer(QMainWindow):
             self.drone_items[i] = drone_rect
             self.scene.addItem(drone_rect)
 
-    def update_display(self, data):
+    def update_display(self, data: Dict[str, Any]) -> None:
         """Updqte visual position of drones"""
         if not data:
             return
         current_turn = data.get("turn", 0)
         self.turn_counter_item.setPlainText(f"Turn : {current_turn}")
         states = data["drones_states"]
-        counts = {name: [] for name in self.sim.zones.keys()}
+        counts: Dict[str, list[str]] = {name: [] for name
+                                        in self.sim.zones.keys()}
         for drone_id, zone_name in states.items():
             if drone_id in self.drone_items:
                 zone = self.sim.zones[zone_name]
@@ -109,7 +110,7 @@ class Visualizer(QMainWindow):
             else:
                 label.setPlainText("")
 
-    def keyPressEvent(self, event) -> None:
+    def keyPressEvent(self, event: Any) -> None:
         if event.key() == Qt.Key.Key_D:
             self.advance_simulation()
         elif event.key() == Qt.Key.Key_Q:
