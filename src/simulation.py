@@ -60,6 +60,8 @@ class Simulation:
             if current_zone not in visited:
                 visited.add(current_zone)
                 voisins = self.get_voisins(current_zone)
+                """We make priority zones at the top of the list"""
+                voisins.sort(key=lambda v: 0 if self.zones[v].zone_type == "priority" else 1)
                 for voisin in voisins:
                     nouveau_chemin = list(path)
                     nouveau_chemin.append(voisin)
@@ -67,12 +69,16 @@ class Simulation:
         return []
 
     def get_voisins(self, zone_name: str) -> list[str]:
+        """find neighbors and Skip Blocked Zone"""
         voisins = []
+        v_zone = ""
         for conn in self.connections:
             if conn.zone1_name == zone_name:
-                voisins.append(conn.zone2_name)
+                v_zone = conn.zone2_name
             elif conn.zone2_name == zone_name:
-                voisins.append(conn.zone1_name)
+                v_zone = conn.zone1_name
+            if v_zone and self.zones[v_zone].zone_type != "blocked":
+                voisins.append(v_zone)
         return voisins
 
     def get_connection(self, zone1_name: str,

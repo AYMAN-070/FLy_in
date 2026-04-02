@@ -15,6 +15,7 @@ class Visualizer(QMainWindow):
         self.history = []
         self.current_index = 0
         self.simulation_generator = self.sim.run_simulation()
+        self.is_finished = False
         """2D scene"""
         self.scene = QGraphicsScene()
         self.view = QGraphicsView(self.scene)
@@ -114,15 +115,20 @@ class Visualizer(QMainWindow):
         if self.current_index < len(self.history) - 1:
             self.current_index += 1
             self.update_display(self.history[self.current_index])
+            return
         else:
             """We calculat the tour"""
-            try:
-                new_data = next(self.simulation_generator)
-                self.history.append(new_data)
-                self.current_index += 1
-                self.update_display(new_data)
-            except StopIteration:
-                print("All the drones have arrived !")
+            if self.is_finished is False:
+                try:
+                    new_data = next(self.simulation_generator)
+                    self.history.append(new_data)
+                    self.current_index += 1
+                    self.update_display(new_data)
+                except StopIteration:
+                    self.is_finished = True
+                    print("All the drones have arrived !")
+                    self.turn_counter_item.setPlainText(f"FIN - Tour : {self.current_index}")
+                    self.turn_counter_item.setDefaultTextColor(QColor("green"))
 
     def rewind_simulation(self) -> None:
         if self.current_index > 0:
