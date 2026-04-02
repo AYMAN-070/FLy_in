@@ -4,7 +4,7 @@ import sys
 class ConfigParser:
     @staticmethod
     def parsing(file: str) -> dict:
-        config = {
+        config: dict = {
             "nb_drones": "",
             "start_hub": "",
             "end_hub": "",
@@ -12,8 +12,8 @@ class ConfigParser:
             "connections": []
         }
         try:
-            with open(file, 'r') as file:
-                for line in file:
+            with open(file, 'r') as f:
+                for line in f:
                     line = line.strip().split('#')[0].strip()
                     if not line:
                         continue

@@ -1,30 +1,22 @@
 import sys
-import os
-import tkinter as tk
-from tkinter import filedialog
 from src.parsing import ConfigParser
 from src.simulation import Simulation
+from PyQt6.QtWidgets import QApplication, QFileDialog
+from src.visualizer import Visualizer
 
 
 def choose_file() -> str:
-    """creat a window Tkinter"""
-    root = tk.Tk()
-    """Hide the window"""
-    root.withdraw()
-    """os.path.abspath..: gives the full path to the current Python file
-    os.path.dirname(...): take the folder containing this file"""
-    dossier_projet = os.path.dirname(os.path.abspath(__file__))
-    """add 'maps' to the path"""
-    dossier_maps = os.path.join(dossier_projet, "maps")
-    file_path = filedialog.askopenfilename(
-        title="Select Fly_in card",
-        # Open the selector in maps folder
-        initialdir=dossier_maps,
-        # Show only .txt files
-        filetypes=[("Text file", "*.txt"), ("All text files", "*.*")]
+    app = QApplication.instance()
+    if not app:
+        app = QApplication(sys.argv)
+    file_path, _ = QFileDialog.getOpenFileName(
+        None,
+        "Select Map File",
+        "./maps",
+        "Text Files (*.txt);;All Files (*)"
     )
     if not file_path:
-        print("No card selected !")
+        print("No file selected. Exiting.")
         sys.exit(0)
     return file_path
 
@@ -36,10 +28,21 @@ def main() -> None:
         print("Opening files ...")
         file_path = choose_file()
 
-    print(f"\n Uploading cards: {file_path}...")
+    print(f"Uploading cards: {file_path}...")
     config = ConfigParser.parsing(file_path)
-    sim = Simulation(config)
-    print(f"Goal : Flying {sim.nb_drones} drones.")
+    try:
+        sim = Simulation(config)
+        print(f"Goal : Flying {sim.nb_drones} drones.")
+        app = QApplication(sys.argv)
+        gui = Visualizer(sim)
+        gui.show()
+        sys.exit(app.exec())
+    except ValueError as e:
+        print(f"Parsing Error: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

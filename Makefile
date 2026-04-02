@@ -3,8 +3,6 @@ MAIN_FILE = fly_in.py
 MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 all: run
 install:
-		@echo "Installing system dependencies (tkinter)..."
-		sudo apt update && sudo apt install -y python3-tk
 		@echo "Installing python dependencies..."
 		pip3 install -r requirements.txt
 run:

@@ -13,7 +13,7 @@ class Zone:
         self.drones_count = 0
 
     @staticmethod
-    def validate_zone(line_value: str):
+    def validate_zone(line_value: str) -> dict:
         parts = line_value.split('[')
         main_data = parts[0].strip()
         data_list = main_data.split()
@@ -78,7 +78,7 @@ class Connection:
                 if key == "max_link_capacity":
                     metadata[key] = int(val)
                 else:
-                    metadata[key] = val
+                    metadata[key] = int(val)
         return {
             "zone1": zone1_name,
             "zone2": zone2_name,

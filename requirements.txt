@@ -1,5 +1,6 @@
 flake8
 mypy
+PyQt6
 # --- Utils to create the package .whl ---
 setuptools
 wheel

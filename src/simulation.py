@@ -1,4 +1,4 @@
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Generator
 from .models import Zone, Connection, Drone
 
 
@@ -78,7 +78,7 @@ class Simulation:
                 return conn
         return None
 
-    def run_simulation(self):
+    def run_simulation(self) -> Generator[Dict[str, Any], None, None]:
         start_name = list(self.zones.values())[0].name
         end_name = list(self.zones.values())[1].name
         shortest_path = self.find_shortest_path(start_name, end_name)
@@ -92,6 +92,11 @@ class Simulation:
         self.zones[start_name].drones_count = self.nb_drones
         """Time engine"""
         turn = 1
+        yield {
+                    "turn": 0,
+                    "movements": 0,
+                    "drones_states": {d.id: d.current_zone for d in drones}
+                }
         """Check is there at least one drone that hasn't arrived yet"""
         while any(not drone.is_finished for drone in drones):
             for conn in self.connections:
@@ -143,8 +148,14 @@ class Simulation:
                     "drones_states": {d.id: d.current_zone for d in drones}
                 }
                 print(" ".join(movement_tour))
-            if not movement_tour and any(not drone.is_finished for
-                                         drone in drones):
-                print("Drones are blocked")
-                break
+            else:
+                print("Waiting... (Drones are waiting or blocked)")
+                yield {
+                    "turn": turn,
+                    "movements": movement_tour,
+                    "drones_states": {d.id: d.current_zone for d in drones}
+                }
             turn += 1
+            if turn > 500:
+                print("Simulation too long - Stop it for security")
+                break
